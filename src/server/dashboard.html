@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aranya — Wildlife Detection Dashboard</title>
+    <link rel="stylesheet" href="/assets/css/prod.css">
+</head>
+<body>
+    <div class="site">
+        <div class="topbar" role="banner">
+            <div class="brand">
+                <div class="logo">A</div>
+                <div>
+                    <h1>Aranya</h1>
+                    <div style="color:var(--muted);font-size:0.85rem">Wildlife Detection</div>
+                </div>
+            </div>
+            <nav class="nav" aria-label="Main navigation">
+                <a href="/">Dashboard</a>
+                <a href="/gallery">Gallery</a>
+                <a href="/docs" class="primary">Docs</a>
+            </nav>
+        </div>
+
+        <section class="hero">
+            <div class="hero-card">
+                <h2>Real-time Wildlife Detection</h2>
+                <p>Upload images and get fast, reliable detections. This front-end is rebuilt for clarity, performance and accessibility.</p>
+                <div style="margin-top:18px">
+                    <div class="card upload-area" id="uploadArea">
+                        <label class="sr-only" for="fileInput">Upload image</label>
+                        <input id="fileInput" type="file" accept="image/jpeg,image/png">
+                        <div style="margin:12px 0;display:flex;gap:8px;align-items:center">
+                            <input id="notifyEmail" type="email" placeholder="Notify email (e.g. you@example.com)" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6edf3" />
+                            <button id="saveEmailBtn" class="btn secondary">Save</button>
+                        </div>
+                        <p style="margin:0 0 12px">Drag & drop or click to select an image (JPG, PNG)</p>
+                        <button class="btn" id="uploadBtn" onclick="document.getElementById('fileInput').click()">Upload Image</button>
+                        <div id="uploadAlert" style="margin-top:12px"></div>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="hero-card">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                        <div style="color:var(--muted);font-size:0.9rem">System</div>
+                        <div style="font-weight:800;font-size:1.1rem" id="serverStatus">●</div>
+                    </div>
+                    <div style="text-align:right">
+                        <div style="color:var(--muted);font-size:0.9rem">Total</div>
+                        <div style="font-weight:800;font-size:1.1rem" id="totalDetections">0</div>
+                    </div>
+                </div>
+                <hr style="margin:12px 0;border:none;border-top:1px solid #eef2f7" />
+                <div style="color:var(--muted);font-size:0.9rem">Last update</div>
+                <div id="lastUpdate" style="font-weight:700">—</div>
+            </aside>
+        </section>
+
+        <section class="grid">
+            <div class="card">
+                <h3 style="margin:0 0 8px">Original</h3>
+                <div class="upload-area" style="padding:0">
+                    <div id="originalPlaceholder" class="empty-state" style="padding:24px">No image uploaded</div>
+                    <img id="originalImage" src="" alt="Original image" class="hidden" style="width:100%;border-radius:8px;" />
+                </div>
+                <div style="margin-top:12px;color:var(--muted)" id="originalInfo">—</div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin:0 0 8px">Annotated</h3>
+                <div class="upload-area" style="padding:0">
+                    <div id="annotatedPlaceholder" class="empty-state" style="padding:24px">Awaiting classification</div>
+                    <img id="annotatedImage" src="" alt="Annotated" class="hidden" style="width:100%;border-radius:8px;" />
+                </div>
+                <div style="margin-top:12px;color:var(--muted)" id="classifiedInfo">—</div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin:0 0 8px">Detections</h3>
+                <div class="results" id="detectionList">
+                    <div class="empty-state">Upload an image to see detections</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="footer">Aranya • Front-end redesign — preview only</div>
+    </div>
+
+    <script src="/assets/js/dashboard.js" defer></script>
+</body>
+</html>

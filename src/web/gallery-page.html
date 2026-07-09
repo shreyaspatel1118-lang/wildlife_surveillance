@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wildlife Gallery — Aranya Detection System</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --dark: #1e293b;
+            --darker: #0f172a;
+            --light: #f1f5f9;
+            --text: #334155;
+            --text-light: #64748b;
+            --border: #cbd5e1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1a1f3a 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #818cf8 0%, #06b6d4 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+        }
+
+        /* Controls */
+        .controls {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-filter {
+            padding: 10px 20px;
+            border: 2px solid var(--border);
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--text);
+        }
+
+        .btn-filter:hover, .btn-filter.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-color: var(--primary-dark);
+        }
+
+        .refresh-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--success), #06d6a0);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .refresh-btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+        }
+
+        /* Gallery Grid */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 16px;
+            }
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .gallery-image {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            background: linear-gradient(135deg, #e2e8f0, #f1f5f9);
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-item:hover .gallery-image {
+            transform: scale(1.08);
+            filter: brightness(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(2px);
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .overlay-icon {
+            color: white;
+            font-size: 2.5rem;
+        }
+
+        .gallery-info {
+            padding: 16px;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-top: 1px solid var(--border);
+        }
+
+        .gallery-label {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.95rem;
+            text-transform: capitalize;
+            margin-bottom: 6px;
+        }
+
+        .gallery-date {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: white;
+        }
+
+        .empty-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90vh;
+            position: relative;
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .lightbox-image {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 12px;
+            display: block;
+        }
+
+        .lightbox-info {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-container {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🦁 Wildlife Gallery</h1>
+            <p>Classified Animals from Aranya Detection System</p>
+        </header>
+
+        <div class="controls">
+            <input type="text" id="searchInput" class="search-box" placeholder="Search by animal name...">
+            <div class="filter-group">
+                <button class="btn-filter active" data-filter="all">All</button>
+                <button class="btn-filter" data-filter="elephant">Elephant</button>
+                <button class="btn-filter" data-filter="lion">Lion</button>
+                <button class="btn-filter" data-filter="tiger">Tiger</button>
+            </div>
+            <button class="refresh-btn" id="refreshBtn">⟳ Refresh</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalCount">0</div>
+                <div class="stat-label">Total Images</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="uniqueCount">0</div>
+                <div class="stat-label">Species Detected</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="latestTime">--:--</div>
+                <div class="stat-label">Latest Detection</div>
+            </div>
+        </div>
+
+        <div id="loadingContainer" class="loading-container" style="display: none;">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading classified images...</div>
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-icon">📸</div>
+            <h2>No Classified Images Yet</h2>
+            <p>Classified detections will appear here once the system processes them.</p>
+        </div>
+
+        <div id="gallery" class="gallery"></div>
+    </div>
+
+    <div id="lightbox" class="lightbox">
+        <div class="lightbox-content">
+            <button class="lightbox-close" id="lightboxClose">&times;</button>
+            <img id="lightboxImage" class="lightbox-image" src="" alt="">
+            <div class="lightbox-info">
+                <strong id="lightboxLabel">Animal</strong>
+                <div id="lightboxDate" style="font-size: 0.9rem; opacity: 0.8; margin-top: 8px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GALLERY_API = '/api/gallery';
+        const gallery = document.getElementById('gallery');
+        const loadingContainer = document.getElementById('loadingContainer');
+        const emptyState = document.getElementById('emptyState');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightboxImage');
+        const lightboxLabel = document.getElementById('lightboxLabel');
+        const lightboxDate = document.getElementById('lightboxDate');
+        const searchInput = document.getElementById('searchInput');
+        const refreshBtn = document.getElementById('refreshBtn');
+
+        let allImages = [];
+        let currentFilter = 'all';
+
+        async function loadGallery() {
+            try {
+                loadingContainer.style.display = 'block';
+                gallery.innerHTML = '';
+                emptyState.style.display = 'none';
+                refreshBtn.classList.add('loading');
+                refreshBtn.disabled = true;
+
+                const response = await fetch(GALLERY_API);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                allImages = await response.json();
+
+                renderGallery();
+                updateStats();
+            } catch (err) {
+                console.error('Failed to load gallery:', err);
+                gallery.innerHTML = '<div style="color: white; grid-column: 1/-1; text-align: center;">Failed to load gallery</div>';
+            } finally {
+                loadingContainer.style.display = 'none';
+                refreshBtn.classList.remove('loading');
+                refreshBtn.disabled = false;
+            }
+        }
+
+        function renderGallery() {
+            let filtered = allImages.filter(img => {
+                if (currentFilter !== 'all' && !img.label.toLowerCase().includes(currentFilter.toLowerCase())) {
+                    return false;
+                }
+                if (searchInput.value && !img.filename.toLowerCase().includes(searchInput.value.toLowerCase()) && !img.label.toLowerCase().includes(searchInput.value.toLowerCase())) {
+                    return false;
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                gallery.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            gallery.innerHTML = filtered.map(img => `
+                <div class="gallery-item" onclick="openLightbox('${img.url}', '${img.label}', '${img.filename}')">
+                    <img src="${img.url}" alt="${img.label}" class="gallery-image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22280%22%3E%3Crect fill=%22%23e2e8f0%22 width=%22280%22 height=%22280%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2224%22 fill=%22%2364748b%22%3EImage not available%3C/text%3E%3C/svg%3E'">
+                    <div class="gallery-overlay">
+                        <span class="overlay-icon">🔍</span>
+                    </div>
+                    <div class="gallery-info">
+                        <div class="gallery-label">${img.label || 'Unknown'}</div>
+                        <div class="gallery-date">${new Date(img.filename).toLocaleDateString() || 'N/A'}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            const total = allImages.length;
+            const unique = new Set(allImages.map(img => img.label.toLowerCase())).size;
+            const latest = allImages.length > 0 ? new Date().toLocaleTimeString() : '--:--';
+
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('uniqueCount').textContent = unique;
+            document.getElementById('latestTime').textContent = latest;
+        }
+
+        function openLightbox(url, label, filename) {
+            lightboxImage.src = url;
+            lightboxLabel.textContent = label || 'Unknown';
+            lightboxDate.textContent = filename;
+            lightbox.classList.add('active');
+        }
+
+        document.getElementById('lightboxClose').addEventListener('click', () => {
+            lightbox.classList.remove('active');
+        });
+
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) lightbox.classList.remove('active');
+        });
+
+        document.querySelectorAll('.btn-filter').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                renderGallery();
+            });
+        });
+
+        searchInput.addEventListener('input', renderGallery);
+        refreshBtn.addEventListener('click', loadGallery);
+
+        // Load on page load
+        loadGallery();
+
+        // Auto-refresh every 10 seconds
+        setInterval(loadGallery, 10000);
+    </script>
+</body>
+</html>

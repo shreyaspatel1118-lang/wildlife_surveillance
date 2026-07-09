@@ -1,0 +1,28 @@
+{
+  "name": "aranya-wildlife-detection",
+  "version": "1.0.0",
+  "description": "Express backend for wildlife detection with YOLO inference",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "mongodb": "^5.7.0",
+    "nodemailer": "^6.9.3",
+    "multer": "^1.4.5-lts.1",
+    "dotenv": "^16.3.1",
+    "form-data": "^4.0.0"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "wildlife",
+    "detection",
+    "yolo",
+    "express"
+  ],
+  "author": "",
+  "license": "MIT"
+}
